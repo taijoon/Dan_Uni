@@ -1,66 +1,51 @@
 # 
+#   env RELEASE=1 make clean test asm
+#
+#   make -C custom          build customization tool
+#                           should be called first
+#
+#   make test               create library and test file
+#                           uses portable-c code
+#
+#   make asm                builds 64-bit library and test code
+#                           uses ASM code
+#
 
-ROOT = ..
-include $(ROOT)/Rules.mk
+.PHONY: all clean distclean libs test asm archive
 
-.PHONY: all init clean distclean test test_asm
+all: test
 
-CFLAGS += -I. -I$(ROOT)/include -I$(ROOT)/source -static-libgcc -Wall
+libs: 
+	$(MAKE) -C custom
+	$(MAKE) -C source
+	$(MAKE) -C source/asm64
 
-# include self-test
-#CFLAGS += -DECP_SELF_TEST
+test: 
+	$(MAKE) -C custom
+	$(MAKE) -C source
+	$(MAKE) -C test test
 
-BUILD_DIR = build$(TARGET_ARCH)
-CLIB_DIR = $(ROOT)/source/$(BUILD_DIR)
-ASMLIB_DIR = $(ROOT)/source/asm64/$(BUILD_DIR)
-
-C_LIB   = $(CLIB_DIR)/libcurve25519.a
-ASM_LIB = $(ASMLIB_DIR)/libcurve25519x64.a
-
-SRCS = \
-    curve25519_donna.c \
-    curve25519_selftest.c \
-    curve25519_test.c
-    
-C_OBJS = $(SRCS:%.c=$(BUILD_DIR)/c_%.o)
-A_OBJS = $(SRCS:%.c=$(BUILD_DIR)/a_%.o)
-
-C_TARGET = $(BUILD_DIR)/curve25519_test
-ASM_TARGET = $(BUILD_DIR)/curve25519_test_x64
-
-ifeq ($(PLATFORM),X86_64)
-all: $(C_TARGET) $(ASM_TARGET)
-else
-all: $(C_TARGET) 
-endif
-
-init:
-	@[ -d $(BUILD_DIR) ] || mkdir $(BUILD_DIR); true
-
-# Optimization flag -O2 does not work correctly with __asm__
-$(BUILD_DIR)/c_curve25519_test.o: curve25519_test.c
-	$(CC) -o $@ -c $(CFLAGS) $<
-
-$(BUILD_DIR)/c_%.o: %.c
-	$(CC) -o $@ -O2 -c $(CFLAGS) $<
-
-$(BUILD_DIR)/a_%.o: %.c
-	$(CC) -o $@ -O2 -c $(CFLAGS) -DUSE_ASM_LIB $<
-
-$(C_TARGET): init $(C_OBJS)
-	$(MAKE_STATIC_COMMAND) $@ $(C_OBJS) $(LDFLAGS) $(C_LIB)
-
-$(ASM_TARGET): init $(A_OBJS)
-	$(MAKE_STATIC_COMMAND) $@ $(A_OBJS) $(LDFLAGS) $(ASM_LIB)
-
-test: $(C_TARGET)
-	./$(C_TARGET) || exit 1
-
-test_asm: $(ASM_TARGET)
-	./$(ASM_TARGET) || exit 1
+asm: 
+	$(MAKE) -C custom
+	$(MAKE) -C source/asm64
+	$(MAKE) -C test test_asm
 
 clean: 
-	@rm -rf $(BUILD_DIR)/*
+	$(MAKE) -C custom clean
+	$(MAKE) -C source clean
+	$(MAKE) -C source/asm64 clean || true
+	$(MAKE) -C test clean
 
-distclean: clean
-	@rm -rf Debug/ Release/ ipch/ x64/ *.sdf *.suo build32/ build64/
+distclean:
+	$(MAKE) -C custom distclean
+	$(MAKE) -C test distclean
+	$(MAKE) -C source distclean
+	$(MAKE) -C source/asm64 distclean || true
+	@rm -rf windows/Debug/ windows/Release/ windows/ipch/ windows/x64/ windows/*.sdf windows/*.suo
+	@rm -rf windows/Asm64Lib/x64/ windows/Asm64Test/x64/
+	@rm -rf windows/Curve25519Lib/x64/ windows/Curve25519Lib/Debug/ windows/Curve25519Lib/Release/
+	@rm -rf windows/CustomTool/x64/ windows/CustomTool/Debug/ windows/CustomTool/Release/
+
+archive: distclean
+	tar cvf /tmp/curve25519-mehdi-`date '+%Y%m%d'`-src.tar *
+
