@@ -1,0 +1,4 @@
+
+
+NN_DIGIT CA_PubKey_x[NUMWORDS];
+NN_DIGIT CA_PubKey_y[NUMWORDS];
