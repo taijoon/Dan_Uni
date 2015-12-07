@@ -353,6 +353,11 @@ implementation {
     }
   }
 
+/* RF 보내는 함수 테스트입니다.
+	원하는 위치에 post RFsend(); 라고 넣으면 RF를 보내게 될겁니다.
+	Led2Toggle();를 넣어두었기 떄문에 파란불이 깜빡일겁니다.
+	보내는 데이터는 local에 설정하면 sendBuf 변수에 옴겨서 RF를 보냅니다.
+	*/
 	message_t sendBuf;
 	nx_uint8_t local[50];
 	task void RFSend() {
@@ -371,6 +376,12 @@ implementation {
   event void AMSend.sendDone(message_t* msg, error_t error) {
 	}
 
+/* Receive 함수입니다. 수신하는 부분이에요 
+	rf로 수신한 데이터는
+	memcpy(rf_local, payload, len);으로 데이터를 받아서 확인할수 있습니다.
+	직접해보면 금방 할수 있을겁니다.
+*/
+	nx_uint8_t rf_local[50];
   event message_t* Receive.receive(message_t* msg, void* payload, uint8_t len) {
 		call Leds.led1Toggle();
 		return msg;
