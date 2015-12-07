@@ -30,7 +30,12 @@ implementation {
   testECDHM.ECC -> ECCC.ECC;
   testECDHM.ECDH -> ECDHC;
 
+  components ActiveMessageC,
+    new AMSenderC(0x10), new AMReceiverC(0x10);
 
+  testECDHM.RadioControl -> ActiveMessageC;
+  testECDHM.AMSend -> AMSenderC;
+  testECDHM.Receive -> AMReceiverC;
 
 }
 

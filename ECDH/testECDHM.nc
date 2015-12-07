@@ -21,6 +21,10 @@ module testECDHM{
     interface AMSend as TimeMsg;
     interface AMSend as SndSecret;
     interface SplitControl as SerialControl;
+
+		interface SplitControl as RadioControl;
+    interface AMSend;
+    interface Receive;
   }
 }
 
@@ -279,6 +283,7 @@ implementation {
 
   event void Boot.booted(){
     call SerialControl.start();
+		call RadioControl.start();
   }
 
   event void SerialControl.startDone(error_t e) {
@@ -347,5 +352,29 @@ implementation {
       }
     }
   }
+
+	message_t sendBuf;
+	nx_uint8_t local[50];
+	task void RFSend() {
+		call Leds.led2Toggle();
+	  memcpy(call AMSend.getPayload(&sendBuf, sizeof(local)), &local, sizeof local);
+	 	if (call AMSend.send(AM_BROADCAST_ADDR, &sendBuf, sizeof local) == SUCCESS)
+	  	;
+  }
+
+  event void RadioControl.startDone(error_t error) {
+  }
+
+  event void RadioControl.stopDone(error_t error) {
+  }
+
+  event void AMSend.sendDone(message_t* msg, error_t error) {
+	}
+
+  event message_t* Receive.receive(message_t* msg, void* payload, uint8_t len) {
+		call Leds.led1Toggle();
+		return msg;
+	}
+
 }
 
