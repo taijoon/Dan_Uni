@@ -30,12 +30,13 @@ implementation {
   testECDHM.ECC -> ECCC.ECC;
   testECDHM.ECDH -> ECDHC;
 
-  components ActiveMessageC,
+  components ActiveMessageC, new TimerMilliC() as RFTimerMilliC,
     new AMSenderC(0x10), new AMReceiverC(0x10);
 
   testECDHM.RadioControl -> ActiveMessageC;
   testECDHM.AMSend -> AMSenderC;
   testECDHM.Receive -> AMReceiverC;
+  testECDHM.rfTimer -> RFTimerMilliC;
 
 }
 

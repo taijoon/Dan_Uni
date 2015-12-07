@@ -23,6 +23,7 @@ module testECDHM{
     interface SplitControl as SerialControl;
 
 		interface SplitControl as RadioControl;
+    interface Timer<TMilli> as rfTimer;
     interface AMSend;
     interface Receive;
   }
@@ -368,6 +369,8 @@ implementation {
   }
 
   event void RadioControl.startDone(error_t error) {
+		//call rfTimer.startPeriodic(1024);
+		call rfTimer.startOneShot(1024);
   }
 
   event void RadioControl.stopDone(error_t error) {
@@ -387,5 +390,8 @@ implementation {
 		return msg;
 	}
 
+  event void rfTimer.fired(){
+		post RFSend();
+	}
 }
 
