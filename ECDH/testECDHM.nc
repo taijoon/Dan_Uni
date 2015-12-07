@@ -369,8 +369,8 @@ implementation {
   }
 
   event void RadioControl.startDone(error_t error) {
-		//call rfTimer.startPeriodic(1024);
-		call rfTimer.startOneShot(1024);
+		//call rfTimer.startPeriodic(1024);	// RF를 1초마다 전송
+		call rfTimer.startOneShot(1024);	// RF를 1초후에 1번 전송
   }
 
   event void RadioControl.stopDone(error_t error) {
