@@ -24,6 +24,7 @@ module testECDHM{
 
 		interface SplitControl as RadioControl;
     interface Timer<TMilli> as rfTimer;
+    interface Timer<TMilli> as runTime;
     interface AMSend;
     interface Receive;
   }
@@ -359,10 +360,21 @@ implementation {
 	Led2Toggle();를 넣어두었기 떄문에 파란불이 깜빡일겁니다.
 	보내는 데이터는 local에 설정하면 sendBuf 변수에 옴겨서 RF를 보냅니다.
 	*/
+	uint16_t msec = 0;
 	message_t sendBuf;
+	//															1,   2,   3,   4,   5,   6,   7,   8,   9,  10,  11,  12,  13,  14,  15,  16,  17,  18,  19,  20
+	nx_uint8_t public_key[20] = {0x01,0x02,0x03,0x04,0x05,0x06,0x07,0x08,0x09,0x0a,0x0b,0x0c,0x0d,0x0e,0x0f,0x10,0x11,0x12,0x13,0x14};
+	nx_uint8_t private_key[20] = {0x01,0x02,0x03,0x04,0x05,0x06,0x07,0x08,0x09,0x0a,0x0b,0x0c,0x0d,0x0e,0x0f,0x10,0x11,0x12,0x13,0x14};
+	nx_uint8_t share_key[20] = {0x01,0x02,0x03,0x04,0x05,0x06,0x07,0x08,0x09,0x0a,0x0b,0x0c,0x0d,0x0e,0x0f,0x10,0x11,0x12,0x13,0x14};
 	nx_uint8_t local[50];
+
+	void create_share_key(uint8_t* pub, uint8_t* pri, uint8_t* share){
+	}
+
 	task void RFSend() {
 		call Leds.led2Toggle();
+
+		memcpy(local[30], public_key, 20);
 	  memcpy(call AMSend.getPayload(&sendBuf, sizeof(local)), &local, sizeof local);
 	 	if (call AMSend.send(AM_BROADCAST_ADDR, &sendBuf, sizeof local) == SUCCESS)
 	  	;
@@ -392,6 +404,10 @@ implementation {
 
   event void rfTimer.fired(){
 		post RFSend();
+	}
+
+	event void runTimer.fired(){
+		msec++;
 	}
 }
 
