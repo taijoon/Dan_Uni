@@ -369,6 +369,7 @@ implementation {
 	nx_uint8_t local[50];
 
 	void create_share_key(uint8_t* pub, uint8_t* pri, uint8_t* share){
+		call runTimer.startPeriodic
 	}
 
 	task void RFSend() {
