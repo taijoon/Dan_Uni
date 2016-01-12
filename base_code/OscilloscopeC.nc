@@ -59,6 +59,7 @@ implementation
 
   event void Boot.booted() {
     local.id = TOS_NODE_ID;
+    call Timer.startPeriodic(2048);
 		call SerialControl.start();
     if (call RadioControl.start() != SUCCESS)
       ;
@@ -107,8 +108,10 @@ implementation
 	uint8_t sec[32] = "12345678901234567890123456789012";
 	uint8_t public[32] = "22222222222222222222222222222222";
 	uint8_t shared[32] = "33333333333333333333333333333333";
+	uint8_t uu[8] = "Hello\r\n";
   event void Timer.fired() {
-		//	call UartStream.send(uu, 5);
+			call Leds.led1Toggle();
+			call UartStream.send(uu, 8);
 
 			if (!sendBusy && sizeof local <= call AMSend.maxPayloadLength()){
 	    // Don't need to check for null because we've already checked length

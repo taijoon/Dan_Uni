@@ -1,10 +1,12 @@
 # Makefile for testECDSA
 
-COMPONENT=testECDSA
+#COMPONENT=testECDSA
+COMPONENT=testECDH
 
 #change the packet length to 102 bytes
 MSG_SIZE=102
 
+CFLAGS+=-DOPT2
 #increase the task queue size
 #PFLAGS += -DTOSH_MAX_TASKS_LOG2=8
 

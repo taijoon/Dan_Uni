@@ -1020,7 +1020,7 @@ implementation {
 
     while(!done){
 
-      for (ri=0; ri<order_digit_len; ri++){
+      for (ri=2; ri<order_digit_len; ri++){
 #ifdef THIRTYTWO_BIT_PROCESSOR
 	PrivateKey[ri] = call Random.rand32();
 #else
