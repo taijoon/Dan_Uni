@@ -21,10 +21,9 @@ module testECDHM{
     interface AMSend as TimeMsg;
     interface AMSend as SndSecret;
     interface SplitControl as SerialControl;
-
-		interface SplitControl as RadioControl;
+    interface SplitControl as RadioControl;
     interface Timer<TMilli> as rfTimer;
-    interface Timer<TMilli> as runTime;
+    interface Timer<TMilli> as runTimer;
     interface AMSend;
     interface Receive;
   }
@@ -369,7 +368,7 @@ implementation {
 	nx_uint8_t local[50];
 
 	void create_share_key(uint8_t* pub, uint8_t* pri, uint8_t* share){
-		call runTimer.startPeriodic
+		//call runTimer.startPeriodic();
 	}
 
 	task void RFSend() {
