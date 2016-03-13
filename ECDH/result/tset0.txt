@@ -1,0 +1,129 @@
+start
+
+[ time of EDH.init() is 2.65 sec ]
+Private key15: 
+cc8de23e7d63bac9d91a6c2742f2639d358adda9
+Public key15: 
+x: 2e11ca219132ac3eaa3abeed6b969f534745a653
+y: b3795f0377ffa8f0b0b2311b713e24cc9e8afc74
+[ time of public key 1 generation is 2.732 sec ]
+established key15: 5784aca72ff2f625ac9b75b8de2f98c47a83b930
+[ time of ECDH.key_agree() for 2 is 3.237 sec ]
+Average timing result for 1 rounds
+ECDH.init(): 2.65
+PK1: 2.732
+PK2: 0.0
+key_agree1: 0.0
+key_agree2: 3.237
+[ time of EDH.init() is 2.659 sec ]
+Private key15: 
+b1c4549c26301f7a03bf90cf558e7c53358adda9
+Public key15: 
+x: 3936109a42470b89af81059f81b14b7c21d5dae5
+y: 227ce49975432edef6d3efd7e1efa93633c8fc46
+[ time of public key 1 generation is 2.69 sec ]
+established key15: 8ce8d8b21b509f6a6fb1dba5d7bdad93e8740937
+[ time of ECDH.key_agree() for 2 is 3.164 sec ]
+Average timing result for 2 rounds
+ECDH.init(): 2.6545
+PK1: 2.711
+PK2: 0.0
+key_agree1: 0.0
+key_agree2: 3.2005
+[ time of EDH.init() is 2.662 sec ]
+Private key15: 
+7585beba5321ade85a8e213b94e5ce0a00000000
+Public key15: 
+x: 11e3f31d2e68cd9482d6a170318db4973b54e87c
+y: a9418652ffc2a92a7071ed09dcbcb886d950ede6
+[ time of public key 1 generation is 2.603 sec ]
+established key15: 52fc84f1278750efa39b6c57f8d11cf3c0ff4e55
+[ time of ECDH.key_agree() for 2 is 3.029 sec ]
+Average timing result for 3 rounds
+ECDH.init(): 2.6569998
+PK1: 2.675
+PK2: 0.0
+key_agree1: 0.0
+key_agree2: 3.1433334
+[ time of EDH.init() is 2.662 sec ]
+Private key15: 
+eae0790230fd9c06427db07eddb44041358adda9
+Public key15: 
+x: 309e1b565e755752e15c38ae7c7fe03824727d2f
+y: 1a0f794db5aab9eca170a32cbaa251584efb2a6f
+[ time of public key 1 generation is 2.652 sec ]
+established key15: 9253f1dc372090b64d98bc65314b808b23af4bcb
+[ time of ECDH.key_agree() for 2 is 3.12 sec ]
+Average timing result for 4 rounds
+ECDH.init(): 2.6582499
+PK1: 2.66925
+PK2: 0.0
+key_agree1: 0.0
+key_agree2: 3.1375
+[ time of EDH.init() is 2.662 sec ]
+Private key15: 
+e8ac7828306e144b8e5bce8d74b003bf358adda9
+Public key15: 
+x: a6d16338b01850fb294644a5b14a0e24811f9a75
+y: af4b35401cb9eb69eefc251a87706cb239afa494
+[ time of public key 1 generation is 2.702 sec ]
+established key15: cbe13ab87fc29a4d38b6f3c13f93106c3fc4d660
+[ time of ECDH.key_agree() for 2 is 3.173 sec ]
+Average timing result for 5 rounds
+ECDH.init(): 2.659
+PK1: 2.6757998
+PK2: 0.0
+key_agree1: 0.0
+key_agree2: 3.1446002
+[ time of EDH.init() is 2.666 sec ]
+Private key15: 
+309814360667874bc7dde7967fb7bba300000000
+Public key15: 
+x: 91fb82c91d8914573b8bd71a6c217b459dc08559
+y: a113ecd9615513410cb04a512ef900fa87f8c5dd
+[ time of public key 1 generation is 2.598 sec ]
+established key15: e3a17cd974fac11d3b44002698199349e9defc6a
+[ time of ECDH.key_agree() for 2 is 3.02 sec ]
+Average timing result for 6 rounds
+ECDH.init(): 2.6601665
+PK1: 2.6628332
+PK2: 0.0
+key_agree1: 0.0
+key_agree2: 3.1238334
+[ time of EDH.init() is 2.666 sec ]
+Private key15: 
+f26e754bbedddb1661f5bfbae5123c90358adda9
+Public key15: 
+x: 624f564fb0e3b33d985423059b618c373d0154c9
+y: 73fdd63698b53640bf1ff4ee91493bc1c44ef8b6
+[ time of public key 1 generation is 2.736 sec ]
+established key15: 784a3700605d1557227bbc5790e652444cb11682
+[ time of ECDH.key_agree() for 2 is 3.208 sec ]
+Average timing result for 7 rounds
+ECDH.init(): 2.6609998
+PK1: 2.6732857
+PK2: 0.0
+key_agree1: 0.0
+key_agree2: 3.135857
+[ time of EDH.init() is 2.668 sec ]
+Private key15: 
+d51266f5b70257fdaf8466f6b08021d7358adda9
+Public key15: 
+x: 8e3ee545404350ea22ecb7ba019a404d56197674
+y: ba2adb5a1acac72b6e3a20b96f9d283152cd5083
+[ time of public key 1 generation is 2.704 sec ]
+established key15: 975534257a7da1fb3bd8ec6c6ccc147d32007c2e
+[ time of ECDH.key_agree() for 2 is 3.165 sec ]
+Average timing result for 8 rounds
+ECDH.init(): 2.6618748
+PK1: 2.677125
+PK2: 0.0
+key_agree1: 0.0
+key_agree2: 3.1395001
+[ time of EDH.init() is 2.668 sec ]
+Private key15: 
+8ff44b8429bc18a0002017a489269e87358adda9
+Public key15: 
+x: cc8c42667bc69b3008adbe4aa6e91462f023d772
+y: 8b117a4958ddabca066018e9f46df1dcd5a36cc0
+[ time of public key 1 generation is 2.686 sec ]
