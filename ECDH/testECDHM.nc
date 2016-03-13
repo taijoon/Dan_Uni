@@ -4,7 +4,7 @@
 #define MSG_LEN 52
 #endif
 
-#define MAX_ROUNDS 10
+#define MAX_ROUNDS 2
 #include "Oscilloscope.h"
 
 module testECDHM{
@@ -40,6 +40,7 @@ implementation {
   uint8_t id;
   int round_index = 1;
   uint8_t recv_cnt = 0;
+  sec_t local;
 
   void init_data();
   void ecdh_init();
@@ -54,6 +55,7 @@ implementation {
     uint32_t time_a, time_b;
     time_msg *pTime;
 
+    call Leds.led2On();
     type = 0;
     t = 0;
 
@@ -185,7 +187,7 @@ implementation {
 
     t = time_b - time_a;
 
-    id = TOS_NODE_ID + 1;
+    id = TOS_NODE_ID;
     pSecret = (ecdh_key_msg *)report.data;
     pSecret->len = KEYDIGITS*NN_DIGIT_LEN;
     pSecret->id = id;
@@ -199,7 +201,7 @@ implementation {
   }
 
   event void SerialControl.startDone(error_t e) {
-    call myTimer.startOneShot(5000);
+    call myTimer.startOneShot(8000);
   }
   
   event void SerialControl.stopDone(error_t e) {
@@ -252,8 +254,12 @@ implementation {
     if (type == 0){
       gen_PrivateKey1(); 
     }else if (type == 1){
-      call Leds.led0On();
       recv_cnt = 1;
+
+      local.id = TOS_NODE_ID;
+	  	memcpy(local.p_x_key, PublicKey1.x, KEYDIGITS);
+  		memcpy(local.p_y_key, PublicKey1.y, KEYDIGITS);
+
 	    call rfTimer.startPeriodic(1024);	// RF를 1초마다 전송
       //call rfTimer.startOneShot(1000);
       
@@ -267,7 +273,7 @@ implementation {
 	init_data();
 	round_index++;
       } else {
-        call Leds.set(0);
+        call Leds.led2Off();;
       }
     }
   }
@@ -280,7 +286,6 @@ implementation {
 	uint16_t msec = 0;
 	message_t sendBuf;
 	//nx_uint8_t local[50];
-  sec_t local;
   sec_t rf_local;
 
 	void create_share_key(uint8_t* pub, uint8_t* pri, uint8_t* share){
@@ -288,16 +293,15 @@ implementation {
 	}
 
 	task void RFSend() {
-    local.id = TOS_NODE_ID;
     local.count++;
-		memcpy(local.p_x_key, PublicKey1.x, KEYDIGITS);
-		memcpy(local.p_y_key, PublicKey1.y, KEYDIGITS);
 	  memcpy(call AMSend.getPayload(&sendBuf, sizeof(local)), &local, sizeof local);
 	 	if (call AMSend.send(AM_BROADCAST_ADDR, &sendBuf, sizeof local) == SUCCESS)
 	  	call Leds.led1Toggle();
   }
 
   event void RadioControl.startDone(error_t error) {
+    if ( error == SUCCESS )
+      call Leds.led1On();
 		//call rfTimer.startPeriodic(1024);	// RF를 1초마다 전송
   }
 
@@ -314,34 +318,26 @@ implementation {
 */
   
   event message_t* Receive.receive(message_t* msg, void* payload, uint8_t len) {
-    if(rf_local.id == 0) {
-		  call Leds.led2Toggle();
-    }
-    
+    public_key_msg *pPublicKey;
     if ( recv_cnt == 1 ) {
-      public_key_msg *pPublicKey;
-
       recv_cnt = 2;
       memcpy(&rf_local, payload, sizeof(sec_t));
       id = rf_local.id;
       memcpy(PublicKey2.x, rf_local.p_x_key, KEYDIGITS);
       memcpy(PublicKey2.y, rf_local.p_y_key, KEYDIGITS);
 
-
       pPublicKey = (public_key_msg *)report.data;
       pPublicKey->len = KEYDIGITS*NN_DIGIT_LEN;
       pPublicKey->id = id;
-      call NN.Encode(pPublicKey->x, KEYDIGITS*NN_DIGIT_LEN, PublicKey1.x, KEYDIGITS);
-      call NN.Encode(pPublicKey->y, KEYDIGITS*NN_DIGIT_LEN, PublicKey1.y, KEYDIGITS);
-      //call NN.Encode(pPublicKey->x, KEYDIGITS*NN_DIGIT_LEN, rf_local.p_x_key, KEYDIGITS);
-      //call NN.Encode(pPublicKey->y, KEYDIGITS*NN_DIGIT_LEN, rf_local.p_y_key, KEYDIGITS);
+      call NN.Encode(pPublicKey->x, KEYDIGITS*NN_DIGIT_LEN, PublicKey2.x, KEYDIGITS);
+      call NN.Encode(pPublicKey->y, KEYDIGITS*NN_DIGIT_LEN, PublicKey2.y, KEYDIGITS);
       call PubKeyMsg.send(1, &report, sizeof(public_key_msg));
-      establish1();
     }
 		return msg;
 	}
 
   event void rfTimer.fired(){
+	  //call Leds.led1Toggle();
 		post RFSend();
 	}
 
