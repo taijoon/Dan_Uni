@@ -1,0 +1,3 @@
+teminal reset :
+  -bsl --telosb -c /dev/ttyUSB0 -r 
+

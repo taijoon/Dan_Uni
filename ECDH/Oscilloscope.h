@@ -14,6 +14,7 @@ typedef nx_struct sec {
   nx_uint16_t id; /* Mote id of sending mote. */
   nx_uint16_t count; /* The readings are samples count * NREADINGS onwards */
 	nx_uint16_t type;
-	nx_uint8_t seckey[32];
+	nx_uint8_t p_x_key[20];
+	nx_uint8_t p_y_key[20];
 } sec_t;
 

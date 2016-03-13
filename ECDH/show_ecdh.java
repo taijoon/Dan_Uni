@@ -42,7 +42,7 @@ public class show_ecdh implements MessageListener
 {
     int round = 0;
 
-    int n_ticks = 1000; //telosb 32768, micaz 921600, imote2 3250000
+    int n_ticks = 32768; //telosb 32768, micaz 921600, imote2 3250000
     float ecdh_init_total = 0;
     float key_agree_total1 = 0;
     float key_agree_total2 = 0;

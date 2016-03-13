@@ -5,6 +5,7 @@
 #endif
 
 #define MAX_ROUNDS 10
+#include "Oscilloscope.h"
 
 module testECDHM{
   uses{
@@ -24,7 +25,7 @@ module testECDHM{
 
 		interface SplitControl as RadioControl;
     interface Timer<TMilli> as rfTimer;
-    interface Timer<TMilli> as runTime;
+    interface Timer<TMilli> as runTimer;
     interface AMSend;
     interface Receive;
   }
@@ -39,6 +40,7 @@ implementation {
   uint32_t t;
   uint8_t id;
   int round_index = 1;
+  uint8_t recv_cnt = 0;
 
   void init_data();
   void ecdh_init();
@@ -83,58 +85,13 @@ implementation {
   void gen_PrivateKey1(){
     private_key_msg *pPrivateKey;
 
-#ifdef TEST_VECTOR  //TEST_VECTOR
-#ifdef EIGHT_BIT_PROCESSOR
-    PrivateKey1[20] = 0x0;
-    PrivateKey1[19] = 0xAA;
-    PrivateKey1[18] = 0x37;
-    PrivateKey1[17] = 0x4F;
-    PrivateKey1[16] = 0xFC;
-    PrivateKey1[15] = 0x3C;
-    PrivateKey1[14] = 0xE1;
-    PrivateKey1[13] = 0x44;
-    PrivateKey1[12] = 0xE6;
-    PrivateKey1[11] = 0xB0;
-    PrivateKey1[10] = 0x73;
-    PrivateKey1[9] = 0x30;
-    PrivateKey1[8] = 0x79;
-    PrivateKey1[7] = 0x72;
-    PrivateKey1[6] = 0xCB;
-    PrivateKey1[5] = 0x6D;
-    PrivateKey1[4] = 0x57;
-    PrivateKey1[3] = 0xB2;
-    PrivateKey1[2] = 0xA4;
-    PrivateKey1[1] = 0xE9;
-    PrivateKey1[0] = 0x82;
-#elif defined(SIXTEEN_BIT_PROCESSOR)
-    PrivateKey1[10] = 0x0;
-    PrivateKey1[9] = 0xAA37;
-    PrivateKey1[8] = 0x4FFC;
-    PrivateKey1[7] = 0x3CE1;
-    PrivateKey1[6] = 0x44E6;
-    PrivateKey1[5] = 0xB073;
-    PrivateKey1[4] = 0x3079;
-    PrivateKey1[3] = 0x72CB;
-    PrivateKey1[2] = 0x6D57;
-    PrivateKey1[1] = 0xB2A4;
-    PrivateKey1[0] = 0xE982;
-#elif defined(THIRTYTWO_BIT_PROCESSOR)
-    PrivateKey1[5] = 0x0;
-    PrivateKey1[4] = 0xAA374FFC;
-    PrivateKey1[3] = 0x3CE144E6;
-    PrivateKey1[2] = 0xB0733079;
-    PrivateKey1[1] = 0x72CB6D57;
-    PrivateKey1[0] = 0xB2A4E982;
-#endif
-    
-#else//random PrivateKey1
     call ECC.gen_private_key(PrivateKey1);
-#endif  //end of test vector
-    id = 1;
+
+    id = TOS_NODE_ID;
     //report private key
     pPrivateKey = (private_key_msg *)report.data;
     pPrivateKey->len = KEYDIGITS*NN_DIGIT_LEN;
-    pPrivateKey->id = 1;
+    pPrivateKey->id = id;
     call NN.Encode(pPrivateKey->d, KEYDIGITS*NN_DIGIT_LEN, PrivateKey1, KEYDIGITS);
     call PriKeyMsg.send(1, &report, sizeof(private_key_msg));
   }
@@ -151,10 +108,10 @@ implementation {
 
     t = time_b - time_a;
 
-    id = 1;
+    id = TOS_NODE_ID;
     pPublicKey = (public_key_msg *)report.data;
     pPublicKey->len = KEYDIGITS*NN_DIGIT_LEN;
-    pPublicKey->id = 1;
+    pPublicKey->id = id;
     call NN.Encode(pPublicKey->x, KEYDIGITS*NN_DIGIT_LEN, PublicKey1.x, KEYDIGITS);
     call NN.Encode(pPublicKey->y, KEYDIGITS*NN_DIGIT_LEN, PublicKey1.y, KEYDIGITS);
     call PubKeyMsg.send(1, &report, sizeof(public_key_msg));
@@ -163,61 +120,15 @@ implementation {
   void gen_PrivateKey2(){
     private_key_msg *pPrivateKey;
     
-#ifdef TEST_VECTOR
-#ifdef EIGHT_BIT_PROCESSOR
-    PrivateKey2[20] = 0x0;
-    PrivateKey2[19] = 0x45;
-    PrivateKey2[18] = 0xFB;
-    PrivateKey2[17] = 0x58;
-    PrivateKey2[16] = 0xA9;
-    PrivateKey2[15] = 0x2A;
-    PrivateKey2[14] = 0x17;
-    PrivateKey2[13] = 0xAD;
-    PrivateKey2[12] = 0x4B;
-    PrivateKey2[11] = 0x15;
-    PrivateKey2[10] = 0x10;
-    PrivateKey2[9] = 0x1C;
-    PrivateKey2[8] = 0x66;
-    PrivateKey2[7] = 0xE7;
-    PrivateKey2[6] = 0x4F;
-    PrivateKey2[5] = 0x27;
-    PrivateKey2[4] = 0x7E; 
-    PrivateKey2[3] = 0x2B;
-    PrivateKey2[2] = 0x46;
-    PrivateKey2[1] = 0x08;
-    PrivateKey2[0] = 0x66;
-#elif defined(SIXTEEN_BIT_PROCESSOR)
-    PrivateKey2[10] = 0x0;
-    PrivateKey2[9] = 0x45FB;
-    PrivateKey2[8] = 0x58A9;
-    PrivateKey2[7] = 0x2A17;
-    PrivateKey2[6] = 0xAD4B;
-    PrivateKey2[5] = 0x1510;
-    PrivateKey2[4] = 0x1C66;
-    PrivateKey2[3] = 0xE74F;
-    PrivateKey2[2] = 0x277E; 
-    PrivateKey2[1] = 0x2B46;
-    PrivateKey2[0] = 0x0866;
-#elif defined(THIRTYTWO_BIT_PROCESSOR)
-    PrivateKey2[5] = 0x0;
-    PrivateKey2[4] = 0x45FB58A9;
-    PrivateKey2[3] = 0x2A17AD4B;
-    PrivateKey2[2] = 0x15101C66;
-    PrivateKey2[1] = 0xE74F277E; 
-    PrivateKey2[0] = 0x2B460866;
-#endif
-#else
     call ECC.gen_private_key(PrivateKey2);      
-#endif
 
-    id = 2;
+    id = TOS_NODE_ID + 1;
     //report private key
     pPrivateKey = (private_key_msg *)report.data;
     pPrivateKey->len = KEYDIGITS*NN_DIGIT_LEN;
-    pPrivateKey->id = 2;
+    pPrivateKey->id = id;
     call NN.Encode(pPrivateKey->d, KEYDIGITS*NN_DIGIT_LEN, PrivateKey2, KEYDIGITS);
     call PriKeyMsg.send(1, &report, sizeof(private_key_msg));
-
   }
 
   void gen_PublicKey2(){
@@ -233,10 +144,10 @@ implementation {
 
     t = time_b - time_a;
 
-    id = 2;
+    id = TOS_NODE_ID + 1;
     pPublicKey = (public_key_msg *)report.data;
     pPublicKey->len = KEYDIGITS*NN_DIGIT_LEN;
-    pPublicKey->id = 2;
+    pPublicKey->id = id;
     call NN.Encode(pPublicKey->x, KEYDIGITS*NN_DIGIT_LEN, PublicKey2.x, KEYDIGITS);
     call NN.Encode(pPublicKey->y, KEYDIGITS*NN_DIGIT_LEN, PublicKey2.y, KEYDIGITS);
     call PubKeyMsg.send(1, &report, sizeof(public_key_msg));
@@ -254,10 +165,10 @@ implementation {
 
     t = time_b - time_a;
 
-    id = 1;
+    id = TOS_NODE_ID;
     pSecret = (ecdh_key_msg *)report.data;
     pSecret->len = KEYDIGITS*NN_DIGIT_LEN;
-    pSecret->id = 1;
+    pSecret->id = id;
     memcpy(pSecret->k, Secret1, KEYDIGITS*NN_DIGIT_LEN);
     call SndSecret.send(1, &report, sizeof(ecdh_key_msg));
     
@@ -275,10 +186,10 @@ implementation {
 
     t = time_b - time_a;
 
-    id = 2;
+    id = TOS_NODE_ID + 1;
     pSecret = (ecdh_key_msg *)report.data;
     pSecret->len = KEYDIGITS*NN_DIGIT_LEN;
-    pSecret->id = 2;
+    pSecret->id = id;
     memcpy(pSecret->k, Secret2, KEYDIGITS*NN_DIGIT_LEN);
     call SndSecret.send(1, &report, sizeof(ecdh_key_msg));
   }
@@ -302,7 +213,7 @@ implementation {
   event void PubKeyMsg.sendDone(message_t* sent, error_t success) {
     time_msg *pTime;
 
-    if (id == 1)
+    if (id == TOS_NODE_ID)
       type = 1;
     else
       type = 2;
@@ -318,9 +229,9 @@ implementation {
   event void SndSecret.sendDone(message_t* sent, error_t error) {
     time_msg *pTime;
 
-    if (id == 1)
-      type = 3;
-    else
+    if (id == TOS_NODE_ID)
+//      type = 3;
+//    else
       type = 4;
 
     pTime = (time_msg *)report.data;
@@ -332,17 +243,22 @@ implementation {
 
 
   event void PriKeyMsg.sendDone(message_t* sent, error_t error) {
-    if (id == 1)
+    if (id == TOS_NODE_ID)
       gen_PublicKey1();
-    else
-      gen_PublicKey2();
+//    else
+//      gen_PublicKey2();
   }
 
   event void TimeMsg.sendDone(message_t* sent, error_t error) {
     if (type == 0){
       gen_PrivateKey1(); 
     }else if (type == 1){
-      gen_PrivateKey2();
+      call Leds.led0On();
+      recv_cnt = 1;
+	    call rfTimer.startPeriodic(1024);	// RF를 1초마다 전송
+      //call rfTimer.startOneShot(1000);
+      
+      ;//gen_PrivateKey2();
     }else if (type == 2){
       establish1();
     }else if (type == 3){
@@ -351,6 +267,8 @@ implementation {
       if(round_index < MAX_ROUNDS){
 	init_data();
 	round_index++;
+      } else {
+        call Leds.set(0);
       }
     }
   }
@@ -362,27 +280,25 @@ implementation {
 	*/
 	uint16_t msec = 0;
 	message_t sendBuf;
-	//															1,   2,   3,   4,   5,   6,   7,   8,   9,  10,  11,  12,  13,  14,  15,  16,  17,  18,  19,  20
-	nx_uint8_t public_key[20] = {0x01,0x02,0x03,0x04,0x05,0x06,0x07,0x08,0x09,0x0a,0x0b,0x0c,0x0d,0x0e,0x0f,0x10,0x11,0x12,0x13,0x14};
-	nx_uint8_t private_key[20] = {0x01,0x02,0x03,0x04,0x05,0x06,0x07,0x08,0x09,0x0a,0x0b,0x0c,0x0d,0x0e,0x0f,0x10,0x11,0x12,0x13,0x14};
-	nx_uint8_t share_key[20] = {0x01,0x02,0x03,0x04,0x05,0x06,0x07,0x08,0x09,0x0a,0x0b,0x0c,0x0d,0x0e,0x0f,0x10,0x11,0x12,0x13,0x14};
-	nx_uint8_t local[50];
+	//nx_uint8_t local[50];
+  sec_t local;
+  sec_t rf_local;
 
 	void create_share_key(uint8_t* pub, uint8_t* pri, uint8_t* share){
 	}
 
 	task void RFSend() {
-		call Leds.led2Toggle();
-
-		memcpy(local[30], public_key, 20);
+    local.id = TOS_NODE_ID;
+    local.count++;
+		memcpy(local.p_x_key, PublicKey1.x, KEYDIGITS);
+		memcpy(local.p_y_key, PublicKey1.y, KEYDIGITS);
 	  memcpy(call AMSend.getPayload(&sendBuf, sizeof(local)), &local, sizeof local);
 	 	if (call AMSend.send(AM_BROADCAST_ADDR, &sendBuf, sizeof local) == SUCCESS)
-	  	;
+	  	call Leds.led1Toggle();
   }
 
   event void RadioControl.startDone(error_t error) {
 		//call rfTimer.startPeriodic(1024);	// RF를 1초마다 전송
-		call rfTimer.startOneShot(1024);	// RF를 1초후에 1번 전송
   }
 
   event void RadioControl.stopDone(error_t error) {
@@ -396,9 +312,32 @@ implementation {
 	memcpy(rf_local, payload, len);으로 데이터를 받아서 확인할수 있습니다.
 	직접해보면 금방 할수 있을겁니다.
 */
-	nx_uint8_t rf_local[50];
+  
   event message_t* Receive.receive(message_t* msg, void* payload, uint8_t len) {
-		call Leds.led1Toggle();
+    if(rf_local.id == 0) {
+		  call Leds.led2Toggle();
+    }
+    
+    if ( recv_cnt == 1 ) {
+      public_key_msg *pPublicKey;
+
+      recv_cnt = 2;
+      memcpy(&rf_local, payload, sizeof(sec_t));
+      id = rf_local.id;
+      memcpy(PublicKey2.x, rf_local.p_x_key, KEYDIGITS);
+      memcpy(PublicKey2.y, rf_local.p_y_key, KEYDIGITS);
+
+
+      pPublicKey = (public_key_msg *)report.data;
+      pPublicKey->len = KEYDIGITS*NN_DIGIT_LEN;
+      pPublicKey->id = id;
+      call NN.Encode(pPublicKey->x, KEYDIGITS*NN_DIGIT_LEN, PublicKey1.x, KEYDIGITS);
+      call NN.Encode(pPublicKey->y, KEYDIGITS*NN_DIGIT_LEN, PublicKey1.y, KEYDIGITS);
+      //call NN.Encode(pPublicKey->x, KEYDIGITS*NN_DIGIT_LEN, rf_local.p_x_key, KEYDIGITS);
+      //call NN.Encode(pPublicKey->y, KEYDIGITS*NN_DIGIT_LEN, rf_local.p_y_key, KEYDIGITS);
+      call PubKeyMsg.send(1, &report, sizeof(public_key_msg));
+      establish1();
+    }
 		return msg;
 	}
 
