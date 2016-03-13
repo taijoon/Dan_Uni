@@ -257,8 +257,8 @@ implementation {
       recv_cnt = 1;
 
       local.id = TOS_NODE_ID;
-	  	memcpy(local.p_x_key, PublicKey1.x, KEYDIGITS);
-  		memcpy(local.p_y_key, PublicKey1.y, KEYDIGITS);
+	  	memcpy(local.p_x_key, PublicKey1.x, KEYDIGITS*NN_DIGIT_LEN);
+  		memcpy(local.p_y_key, PublicKey1.y, KEYDIGITS*NN_DIGIT_LEN);
 
 	    call rfTimer.startPeriodic(1024);	// RF를 1초마다 전송
       //call rfTimer.startOneShot(1000);
@@ -323,8 +323,8 @@ implementation {
       recv_cnt = 2;
       memcpy(&rf_local, payload, sizeof(sec_t));
       id = rf_local.id;
-      memcpy(PublicKey2.x, rf_local.p_x_key, KEYDIGITS);
-      memcpy(PublicKey2.y, rf_local.p_y_key, KEYDIGITS);
+      memcpy(PublicKey2.x, rf_local.p_x_key, KEYDIGITS*NN_DIGIT_LEN);
+      memcpy(PublicKey2.y, rf_local.p_y_key, KEYDIGITS*NN_DIGIT_LEN);
 
       pPublicKey = (public_key_msg *)report.data;
       pPublicKey->len = KEYDIGITS*NN_DIGIT_LEN;
