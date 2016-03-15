@@ -4,7 +4,12 @@
 #define MSG_LEN 52
 #endif
 
-#define MAX_ROUNDS 2
+#define MAX_ROUNDS 1
+#ifdef MAX_ROUNDS 10
+#warning "***** MAX_ROUNDS is FIX NODE *****"
+#elif
+#warning "***** MAX_ROUNDS is Convert NODE *****"
+#endif
 #include "Oscilloscope.h"
 
 module testECDHM{
