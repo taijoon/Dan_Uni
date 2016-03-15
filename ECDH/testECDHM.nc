@@ -269,7 +269,9 @@ implementation {
     }else if (type == 3){
       establish2();
     }else if (type == 4){
-      if(round_index < MAX_ROUNDS){
+      if(MAX_ROUNDS == 1)
+        recv_cnt = 1;
+      else if(round_index < MAX_ROUNDS){
 	init_data();
 	round_index++;
       } else {
